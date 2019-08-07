@@ -1,0 +1,31 @@
+# Vagrantfile
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  # https://atlas.hashicorp.com/centos/boxes/7
+  config.vm.box = "centos/7"
+
+  # 適宜修正する
+  config.vm.network "private_network", ip: "192.168.33.21"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.memory = "2048"
+  end
+
+  config.vm.provider "hyperv" do |h|
+    h.memory = "2048"
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo yum -y --nogpgcheck groupinstall "GNOME Desktop" "Japanese Support" "Development Tools" "System Administration Tools"
+    sudo yum -y epel-release
+    sudo yum -y update
+    sudo yum -y install gcc kernel-devel kernel-headers dkms make bzip2 perl
+    KERN_DIR=/usr/src/kernels/`uname -r`
+    sudo systemctl set-default graphical.target
+    sudo reboot
+  SHELL
+end
