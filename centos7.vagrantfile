@@ -2,6 +2,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+def install_plugin(plugin)
+  system "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
+end
+
+install_plugin('vagrant-vbguest')
+
 Vagrant.configure(2) do |config|
 
   # https://atlas.hashicorp.com/centos/boxes/7
@@ -23,8 +29,12 @@ Vagrant.configure(2) do |config|
     sudo yum -y --nogpgcheck groupinstall "GNOME Desktop" "Japanese Support" "Development Tools" "System Administration Tools"
     sudo yum -y epel-release
     sudo yum -y update
+    sudo yum -y install man-pages-ja
     sudo yum -y install gcc kernel-devel kernel-headers dkms make bzip2 perl
     KERN_DIR=/usr/src/kernels/`uname -r`
+    sudo localectl set-locale LANG=ja_JP.UTF-8
+    sudo localectl set-keymap jp106
+    sudo timedatectl set-timezone Asia/Tokyo
     sudo systemctl set-default graphical.target
     sudo reboot
   SHELL
